@@ -18,6 +18,8 @@ let ravenInterval = 500;
 let lastTime = 0;
 let ravens = []
 let explosions = [];
+let particles = [];
+
 
 class Raven {
   constructor() {
@@ -43,6 +45,8 @@ class Raven {
       Math.floor(Math.random() * 255)
     ];
     this.color = `rgba(${this.randomColors[0]}, ${this.randomColors[1]}, ${this.randomColors[2]})`;
+    // Set trail fro only 50% of ravens
+    this.hasTrail = Math.random() > 0.5;
   }
   update(deltaTime) {
     /** Bounce back to canvas on reaching edges */
@@ -64,6 +68,9 @@ class Raven {
       if(this.frame > this.maxFrame) this.frame = 0;
       else this.frame++;
       this.timeSinceFlap = 0;
+      if (this.hasTrail) {
+        particles.push(new Particle(this.x, this.y, this.width, this.color));
+      }
     }
     /** Check if a raven crosses the canvas */
     if (this.x < 0 - this.width) gameOver = true;
@@ -86,7 +93,6 @@ class Raven {
     );
   }
 }
-
 class Explosions {
   constructor(x, y, size) { 
     this.image = new Image();
@@ -129,6 +135,29 @@ class Explosions {
     );
   }
 }
+class Particle { 
+  constructor(x, y, size, color) {
+    this.size = size;
+    this.x = x + this.size * 0.5;
+    this.y = y + this.size * 0.33;
+    this.radius = Math.random() * this.size / 10;
+    this.maxRadius = Math.random() * 20 + 35;
+    this.markedForDeletion = false;
+    this.speedX = Math.random() * 1 + 0.5;
+    this.color = color;
+  }
+  update() { 
+    this.x += this.speedX;
+    this.radius += 0.5;
+    if (this.radius > this.maxRadius) this.markedForDeletion = true;
+  }
+  draw() {
+    ctx.beginPath();
+    ctx.fillStyle = this.color;
+    ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+    ctx.fill();
+  }
+}
 
 function drawScore() {
   ctx.fillStyle = 'black';
@@ -167,10 +196,11 @@ function animate(timeStamp) {
     ravens.sort((a, b) => a.width - b.width);
   }
   drawScore();
-  [...ravens, ...explosions].forEach(object => object.update(deltaTime));
-  [...ravens, ...explosions].forEach(object => object.draw());
+  [...particles, ...ravens, ...explosions ].forEach(object => object.update(deltaTime));
+  [...particles, ...ravens, ...explosions ].forEach(object => object.draw());
   ravens = ravens.filter(obj => !obj.markedForDeletion);
   explosions = explosions.filter(obj => !obj.markedForDeletion);
+  particles = particles.filter(obj => !obj.markedForDeletion);
   /** Logic Block : End */
   if (!gameOver) {
     requestAnimationFrame(animate);
@@ -194,3 +224,4 @@ window.addEventListener('click', (e) => {
     }
   })
 });
+
