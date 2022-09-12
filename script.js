@@ -104,6 +104,8 @@ function animate(timeStamp) {
   if (timeToNextRaven > ravenInterval) { 
     ravens.push(new Raven());
     timeToNextRaven = 0;
+    /** Layering sprite based on size */
+    ravens.sort((a, b) => a.width - b.width);
   }
   drawScore();
   [...ravens].forEach(object => object.update(deltaTime));
