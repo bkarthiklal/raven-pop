@@ -38,10 +38,9 @@ class Raven {
     this.randomColors = [
       Math.floor(Math.random() * 255),
       Math.floor(Math.random() * 255),
-      Math.floor(Math.random() * 255),
-      Math.floor(Math.random() * 255),
+      Math.floor(Math.random() * 255)
     ];
-    this.color = `rgba(${this.randomColors[0]}, ${this.randomColors[1]}, ${this.randomColors[2]}, ${this.randomColors[3]})`;
+    this.color = `rgba(${this.randomColors[0]}, ${this.randomColors[1]}, ${this.randomColors[2]})`;
   }
   update(deltaTime) {
     /** Bounce back to canvas on reaching edges */
@@ -69,8 +68,8 @@ class Raven {
   }
   draw() {
     // ctx.drawImage(image, sx,sy,sw,sh, dx,dy,dw,dh);
-    ctx.fillStyle = this.color;
-    ctx.fillRect(this.x, this.y, this.width, this.height);
+    collisionCanvasCtx.fillStyle = this.color;
+    collisionCanvasCtx.fillRect(this.x, this.y, this.width, this.height);
     ctx.drawImage(
       this.image,
       this.frame * this.spriteWidth,
@@ -94,9 +93,9 @@ function drawScore() {
   ctx.fillText(`Score: ${score}`, 55, 80);
 }
 
-
 function animate(timeStamp) {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
+  collisionCanvasCtx.clearRect(0, 0, canvas.width, canvas.height);
   /** Logic Block */
   let deltaTime = timeStamp - lastTime;
   lastTime = timeStamp;
@@ -117,8 +116,15 @@ function animate(timeStamp) {
 
 animate(0)
 
-
 window.addEventListener('click', (e) => { 
-  const detectPixelColor = ctx.getImageData(e.x, e.y, 1, 1).data;
-  console.log(`🚀 ~ file: script.js ~ line 110 ~ window.addEventListener ~ detectPixelColor`, detectPixelColor);
+  const pc = collisionCanvasCtx.getImageData(e.x, e.y, 1, 1).data;
+  ravens.forEach(object => {
+    if (
+      pc[0] === object.randomColors[0]
+      && pc[1] === object.randomColors[1]
+      && pc[2] === object.randomColors[2]) {
+      object.markedForDeletion = true;
+      score++;
+    }
+  })
 });
