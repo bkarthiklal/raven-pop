@@ -32,8 +32,15 @@ class Raven {
     this.flapInterval = Math.random() * 50 + 50;
   }
   update(deltaTime) {
+    /** Bounce back to canvas on reaching edges */
+    if (this.y < 0 || this.y > canvas.height - this.height) { 
+      this.directionY *= -1
+    }
+
+    /** Up and down directions for the ravens */
     this.x -= this.directionX;
     this.y -= this.directionY;
+    
     /** Clear raven array when off canvas */
     if (this.x < 0 - this.width) this.markedForDeletion = true;
     
