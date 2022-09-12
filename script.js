@@ -11,21 +11,57 @@ let ravens = []
 
 class Raven {
   constructor() {
-    this.width = 100;
-    this.height = 50;
+    this.image = new Image();
+    this.image.src = './images/raven.png';
+    this.spriteWidth = 271;
+    this.spriteHeight = 194;
+    this.sizeModifier = Math.random() * 0.5 + 0.3;
+    this.width = this.spriteWidth * this.sizeModifier;
+    this.height = this.spriteHeight * this.sizeModifier;
     this.x = canvas.width;
     this.y = Math.random() * (canvas.height - this.height)
+
     this.directionX = Math.random() * 5 + 3;
     this.directionY = Math.random() * 5 - 2.5;
     this.markedForDeletion = false;
+
+    this.frame = 0;
+    this.maxFrame = 4;
+
+    this.timeSinceFlap = 0;
+    this.flapInterval = Math.random() * 50 + 50;
   }
-  update() {
+  update(deltaTime) {
     this.x -= this.directionX;
-    if(this.x < 0 - this.width) this.markedForDeletion = true;
+    this.y -= this.directionY;
+    /** Clear raven array when off canvas */
+    if (this.x < 0 - this.width) this.markedForDeletion = true;
+    
+    /** Flap speed control : unifying flap speed */
+    this.timeSinceFlap += deltaTime;
+    if (this.timeSinceFlap > this.flapInterval) { 
+      /** Resetting Frame */
+      if(this.frame > this.maxFrame) this.frame = 0;
+      else this.frame++;
+      this.timeSinceFlap = 0;
+    }
+
+
   }
   draw() {
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(this.x, this.y, this.width, this.height);
+    // ctx.drawImage(image, sx,sy,sw,sh, dx,dy,dw,dh);
+    ctx.drawImage(
+      this.image,
+      this.frame * this.spriteWidth,
+      0,
+      this.spriteWidth,
+      this.spriteHeight,
+      this.x,
+      this.y,
+      this.width,
+      this.height,
+
+    );
   }
 }
 
@@ -43,7 +79,7 @@ function animate(timeStamp) {
     ravens.push(new Raven());
     timeToNextRaven = 0;
   }
-  [...ravens].forEach(object => object.update());
+  [...ravens].forEach(object => object.update(deltaTime));
   [...ravens].forEach(object => object.draw());
   ravens = ravens.filter(obj => !obj.markedForDeletion);
   /** Logic Block : End */
