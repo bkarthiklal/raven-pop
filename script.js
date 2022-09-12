@@ -194,6 +194,25 @@ function drawGameOver() {
     canvas.width / 2 + 5,
     canvas.height / 2 + 5
   );
+  drawPlayAgain();
+}
+
+function drawPlayAgain() {
+  ctx.textAlign = 'center';
+  ctx.fillStyle = 'black';
+  ctx.fillText(
+    `Press "Enter" to play again`,
+    canvas.width / 2 + 10 + 3,
+    canvas.height / 2 + 75 + 3
+  );
+  ctx.fillStyle = 'white';
+  ctx.fillText(
+    `Press "Enter" to play again`,
+    canvas.width / 2 + 10,
+    canvas.height / 2 + 75
+  );
+
+
 }
 
 function animate(timeStamp) {
@@ -239,3 +258,9 @@ window.addEventListener('click', (e) => {
   })
 });
 
+/** Reload when pressing "Space" on game over */
+window.addEventListener('keydown', e=> {
+    if ((e.code === 'Enter' || e.code === 'NumpadEnter') && gameOver){
+      window.location.reload();
+    }
+});
