@@ -69,7 +69,15 @@ class Raven {
       else this.frame++;
       this.timeSinceFlap = 0;
       if (this.hasTrail) {
-        particles.push(new Particle(this.x, this.y, this.width, this.color));
+        for (let index = 0; index < 5; index++) {
+          particles.push(
+            new Particle(
+              this.x,
+              this.y,
+              this.width,
+              this.color)
+          );
+        }
       }
     }
     /** Check if a raven crosses the canvas */
@@ -138,8 +146,8 @@ class Explosions {
 class Particle { 
   constructor(x, y, size, color) {
     this.size = size;
-    this.x = x + this.size * 0.5;
-    this.y = y + this.size * 0.33;
+    this.x = x + this.size * 0.5 + Math.random() * 50 -25;
+    this.y = y + this.size * 0.33 + Math.random() * 50 -25;
     this.radius = Math.random() * this.size / 10;
     this.maxRadius = Math.random() * 20 + 35;
     this.markedForDeletion = false;
@@ -148,8 +156,9 @@ class Particle {
   }
   update() { 
     this.x += this.speedX;
-    this.radius += 0.5;
-    if (this.radius > this.maxRadius) this.markedForDeletion = true;
+    this.radius += 0.3;
+    /** -5 to prevent blinking of particles */
+    if (this.radius > this.maxRadius - 5) this.markedForDeletion = true;
   }
   draw() {
     /** Wrapping render block between 'save' and 'restore' helps improve performance and rendering */
